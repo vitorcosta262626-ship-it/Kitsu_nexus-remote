@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>KITSU NEXUS — Remote Control</title>
+<!-- © 2024 L.O.B.E.X.T.I Studios — Todos os direitos reservados. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
@@ -54,15 +55,12 @@ html, body {
   touch-action: manipulation;
 }
 
-/* ============================================================
-   SCROLLBAR
-   ============================================================ */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--panel); }
 ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
 /* ============================================================
-   BACKGROUND ANIMATED
+   BACKGROUND
    ============================================================ */
 #bg-canvas {
   position: fixed; inset: 0;
@@ -108,6 +106,11 @@ html, body {
   font-size: .72rem; color: var(--dim2);
   letter-spacing: 3px; margin-top: 4px;
 }
+.login-logo-copy {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .58rem; color: var(--dim);
+  letter-spacing: 1px; margin-top: 6px;
+}
 .login-avatar {
   font-size: 3rem; margin-bottom: 8px;
   filter: drop-shadow(0 0 14px var(--accent));
@@ -137,6 +140,11 @@ html, body {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(107,92,231,.2);
 }
+.form-input.error {
+  border-color: var(--err);
+  box-shadow: 0 0 0 3px rgba(255,85,85,.15);
+  animation: shake .35s;
+}
 
 .btn-login {
   width: 100%; padding: 15px;
@@ -152,26 +160,103 @@ html, body {
 .btn-login:active { transform: translateY(0); opacity: .85; }
 .btn-login:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
+/* ── Error Box melhorado ── */
 .login-error {
-  background: rgba(232,53,53,.12); border: 1px solid var(--err);
-  border-radius: 8px; padding: 10px 14px;
-  color: var(--err); font-size: .85rem;
-  margin-top: 14px; display: none;
+  border-radius: 10px;
+  padding: 13px 16px;
+  margin-top: 14px;
+  display: none;
   animation: shake .35s;
+  font-size: .84rem;
+  line-height: 1.5;
 }
-.login-error.show { display: block; }
+.login-error.show { display: flex; align-items: flex-start; gap: 10px; }
+
+.login-error.type-wrong-pass {
+  background: rgba(255,85,85,.10);
+  border: 1px solid rgba(255,85,85,.45);
+  color: #FF8080;
+}
+.login-error.type-banned-temp {
+  background: rgba(240,192,48,.10);
+  border: 1px solid rgba(240,192,48,.45);
+  color: #F0C030;
+}
+.login-error.type-banned-perm {
+  background: rgba(255,30,30,.12);
+  border: 1px solid rgba(255,30,30,.55);
+  color: #FF5555;
+}
+.login-error.type-blocked {
+  background: rgba(255,100,30,.10);
+  border: 1px solid rgba(255,100,30,.45);
+  color: #FF9060;
+}
+.login-error.type-not-found {
+  background: rgba(107,92,231,.10);
+  border: 1px solid rgba(107,92,231,.4);
+  color: #9580FF;
+}
+.login-error.type-too-many {
+  background: rgba(240,192,48,.10);
+  border: 1px solid rgba(240,192,48,.45);
+  color: #F0C030;
+}
+.login-error.type-generic {
+  background: rgba(255,85,85,.10);
+  border: 1px solid rgba(255,85,85,.35);
+  color: #FF8080;
+}
+.login-error.type-network {
+  background: rgba(56,60,96,.3);
+  border: 1px solid var(--border2);
+  color: var(--dim2);
+}
+
+.login-error-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+.login-error-body { flex: 1; }
+.login-error-title { font-weight: 700; font-family: 'Rajdhani', sans-serif; font-size: .95rem; letter-spacing: 1px; }
+.login-error-msg   { font-size: .78rem; margin-top: 3px; opacity: .85; }
+
+/* Barra de tentativas restantes */
+.attempts-bar {
+  margin-top: 10px; display: none;
+}
+.attempts-bar.show { display: block; }
+.attempts-bar-label {
+  font-size: .7rem; color: var(--dim2); margin-bottom: 5px;
+  font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
+}
+.attempts-track {
+  height: 4px; background: var(--border2); border-radius: 2px; overflow: hidden;
+}
+.attempts-fill {
+  height: 100%; border-radius: 2px;
+  transition: width .4s ease, background .4s ease;
+}
+
+/* Countdown ban */
+.ban-countdown {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .8rem; margin-top: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ban-countdown-timer {
+  background: rgba(0,0,0,.3);
+  padding: 2px 10px; border-radius: 5px;
+  letter-spacing: 2px;
+}
 
 @keyframes shake {
-  0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
 }
 
 .login-security {
   display: flex; align-items: center; gap: 6px;
   margin-top: 16px; justify-content: center;
-  font-size: .68rem; color: var(--dim);
+  font-size: .65rem; color: var(--dim);
   font-family: 'Share Tech Mono', monospace;
 }
-.login-security::before { content:'🔒'; font-size:.8rem; }
 
 /* ============================================================
    MAIN LAYOUT
@@ -179,7 +264,6 @@ html, body {
 #app { display: none; height: 100vh; flex-direction: column; position: relative; z-index: 1; }
 #app.visible { display: flex; }
 
-/* Top Bar */
 #topbar {
   height: var(--top-h); background: var(--panel);
   border-bottom: 1px solid var(--border);
@@ -237,7 +321,6 @@ html, body {
 }
 .btn-icon:hover { border-color: var(--accent); color: var(--accent2); }
 
-/* Kitsu Speaking */
 .kitsu-speaking {
   display: flex; align-items: center; gap: 6px;
   font-size: .72rem; color: var(--pink2);
@@ -401,7 +484,6 @@ html, body {
 }
 #chat-input:focus { border-color: var(--accent); }
 
-/* ── PTT BUTTON (o botão tipo F10) ── */
 .btn-ptt {
   width: 46px; height: 46px;
   background: var(--card2); border: 2px solid var(--border2);
@@ -428,7 +510,6 @@ html, body {
   50%{box-shadow:0 0 0 10px rgba(232,53,53,0)}
 }
 
-/* PTT Mobile — botão grande flutuante */
 #ptt-floating {
   display: none;
   position: fixed; bottom: calc(var(--mob-nav-h) + 16px); right: 16px;
@@ -459,7 +540,7 @@ html, body {
 .btn-send:active { transform: scale(.93); }
 
 /* ============================================================
-   PANEL: CONTROLES
+   CONTROLES
    ============================================================ */
 .controls-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 9px;
@@ -476,7 +557,6 @@ html, body {
 .ctrl-icon { font-size: 1.5rem; }
 .ctrl-label { font-size: .75rem; color: var(--dim2); }
 
-/* Emotions */
 .emotion-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .emo-btn {
   background: var(--card2); border: 2px solid transparent;
@@ -492,7 +572,6 @@ html, body {
 .emo-icon { font-size: 1.8rem; display: block; }
 .emo-label { font-size: .68rem; letter-spacing: 1px; margin-top: 4px; }
 
-/* Sliders */
 .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .slider-label { font-size: .78rem; color: var(--dim2); min-width: 100px; }
 .slider {
@@ -512,13 +591,10 @@ html, body {
   font-size: .83rem; color: var(--accent2);
 }
 
-/* ─── DISTÂNCIA CONTROL ─── */
 .dist-control {
   display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 8px 0;
 }
-.dist-ring {
-  position: relative; width: 160px; height: 160px;
-}
+.dist-ring { position: relative; width: 160px; height: 160px; }
 .dist-ring svg { width: 100%; height: 100%; }
 .dist-ring-track { fill: none; stroke: var(--border2); stroke-width: 8; }
 .dist-ring-fill  { fill: none; stroke: url(#distGrad); stroke-width: 8;
@@ -544,7 +620,7 @@ html, body {
 .dist-preset:hover, .dist-preset.active { border-color: var(--cyan); color: var(--cyan2); background: rgba(24,212,232,.1); }
 
 /* ============================================================
-   PANEL: MÓDULOS
+   MÓDULOS
    ============================================================ */
 .module-item {
   background: var(--card2); border: 1px solid var(--border);
@@ -559,7 +635,6 @@ html, body {
 .module-status.on  { color: var(--ok); }
 .module-status.off { color: var(--offline); }
 
-/* Toggle */
 .toggle { position: relative; width: 44px; height: 24px; cursor: pointer; flex-shrink: 0; }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .toggle-track { position: absolute; inset: 0; background: var(--border2); border-radius: 12px; transition: background .3s; }
@@ -583,7 +658,7 @@ html, body {
 .ind-dot.off { background: var(--offline); }
 
 /* ============================================================
-   PANEL: OBS
+   OBS
    ============================================================ */
 .scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 8px; }
 .scene-btn {
@@ -596,7 +671,7 @@ html, body {
 .scene-btn.active { border-color: var(--ok); color: var(--ok); background: rgba(53,216,112,.08); }
 
 /* ============================================================
-   PANEL: SMART HOME
+   SMART HOME
    ============================================================ */
 .home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 10px; }
 .home-device {
@@ -611,7 +686,7 @@ html, body {
 .dev-name { font-size: .72rem; color: var(--dim2); }
 
 /* ============================================================
-   PANEL: LOGS
+   LOGS
    ============================================================ */
 #log-box {
   background: #020308; border: 1px solid var(--border);
@@ -628,7 +703,7 @@ html, body {
 .log-line.info { color: var(--cyan); }
 
 /* ============================================================
-   PANEL: ADMIN
+   ADMIN
    ============================================================ */
 .admin-tabs {
   display: flex; gap: 6px; margin-bottom: 14px;
@@ -805,7 +880,7 @@ html, body {
 .empty-icon  { font-size: 2.6rem; display: block; margin-bottom: 10px; opacity: .4; }
 
 /* ============================================================
-   MOBILE RESPONSIVE
+   MOBILE
    ============================================================ */
 @media (max-width: 640px) {
   :root { --sidebar-w: 0px; --top-h: 48px; }
@@ -813,7 +888,7 @@ html, body {
   #sidebar-toggle { display: none; }
   #mobile-nav { display: flex !important; }
   #ptt-floating { display: flex !important; }
-  .btn-ptt-sidebar { display: none !important; } /* esconde o PTT inline no mobile */
+  .btn-ptt-sidebar { display: none !important; }
   .panel { padding: 10px; padding-bottom: calc(var(--mob-nav-h) + 10px); }
   #panel-chat { padding-bottom: 0 !important; }
   #chat-messages { padding-bottom: calc(var(--mob-nav-h) + 80px); }
@@ -823,8 +898,8 @@ html, body {
   .perm-grid { grid-template-columns: repeat(2, 1fr); }
   .dist-ring { width: 130px; height: 130px; }
   .dist-num { font-size: 1.6rem; }
-  /* esconde texto no topbar em telas muito pequenas */
   .topbar-user span:not(strong):not(.badge) { display: none; }
+  .login-box { padding: 32px 22px; }
 }
 
 #mobile-nav {
@@ -843,26 +918,22 @@ html, body {
 .mob-nav-btn span { font-size: .5rem; letter-spacing: 1px; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; }
 .mob-nav-btn.active { color: var(--accent2); }
 
-/* ============================================================
-   KEYBOARD SHORTCUT BADGE
-   ============================================================ */
-.kbd {
-  display: inline-block; background: var(--card2); border: 1px solid var(--border2);
-  border-radius: 4px; padding: 1px 6px; font-size: .62rem;
-  font-family: 'Share Tech Mono', monospace; color: var(--dim2);
-  vertical-align: middle; margin-left: 5px;
+/* Copyright footer no login */
+.login-footer {
+  position: fixed; bottom: 12px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .58rem; color: var(--dim);
+  letter-spacing: 1px; pointer-events: none;
 }
 </style>
 </head>
 <body>
 
-<!-- Background Canvas -->
 <canvas id="bg-canvas"></canvas>
-
-<!-- ============================================================ ALERTS ============================================================ -->
 <div id="alerts-container"></div>
 
-<!-- ============================================================ MODAL ============================================================ -->
+<!-- MODAL -->
 <div id="modal-overlay">
   <div id="modal-box">
     <div class="modal-title" id="modal-title">Modal</div>
@@ -873,7 +944,7 @@ html, body {
   </div>
 </div>
 
-<!-- ============================================================ PTT FLUTUANTE (mobile) ============================================================ -->
+<!-- PTT MOBILE -->
 <button id="ptt-floating" title="Segurar para falar">🎤</button>
 
 <!-- ============================================================ LOGIN ============================================================ -->
@@ -883,7 +954,9 @@ html, body {
       <span class="login-avatar">🦊</span>
       <div class="login-logo-title">KITSU NEXUS</div>
       <div class="login-logo-sub">REMOTE CONTROL SYSTEM</div>
+      <div class="login-logo-copy">© L.O.B.E.X.T.I Studios</div>
     </div>
+
     <div class="form-group">
       <label class="form-label">Usuário</label>
       <input class="form-input" type="text" id="login-user" placeholder="usuário" autocomplete="username" spellcheck="false">
@@ -892,15 +965,38 @@ html, body {
       <label class="form-label">Senha</label>
       <input class="form-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
     </div>
+
     <button class="btn-login" id="btn-login" onclick="doLogin()">ENTRAR</button>
-    <div class="login-error" id="login-error"></div>
-    <div class="login-security">Conexão segura — sessão criptografada</div>
+
+    <!-- Error box dinâmico -->
+    <div class="login-error" id="login-error">
+      <span class="login-error-icon" id="login-error-icon">❌</span>
+      <div class="login-error-body">
+        <div class="login-error-title" id="login-error-title">Erro</div>
+        <div class="login-error-msg"  id="login-error-msg"></div>
+        <div class="ban-countdown"    id="ban-countdown" style="display:none">
+          ⏱ Bloqueio expira em: <span class="ban-countdown-timer" id="ban-timer">--:--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de tentativas -->
+    <div class="attempts-bar" id="attempts-bar">
+      <div class="attempts-bar-label" id="attempts-label">TENTATIVAS RESTANTES: 5/5</div>
+      <div class="attempts-track">
+        <div class="attempts-fill" id="attempts-fill" style="width:100%;background:var(--ok)"></div>
+      </div>
+    </div>
+
+    <div class="login-security">🔒 Conexão segura — sessão criptografada</div>
   </div>
 </div>
 
-<!-- ============================================================ MAIN APP ============================================================ -->
+<!-- copyright footer -->
+<div class="login-footer">© 2024 L.O.B.E.X.T.I Studios — Kitsu Nexus v1.0 — Todos os direitos reservados.</div>
+
+<!-- ============================================================ APP ============================================================ -->
 <div id="app">
-  <!-- Top Bar -->
   <div id="topbar">
     <button class="btn-icon" id="sidebar-toggle" onclick="toggleSidebar()" title="Menu">☰</button>
     <div class="topbar-logo">KITSU NEXUS</div>
@@ -925,9 +1021,7 @@ html, body {
     </div>
   </div>
 
-  <!-- Main Area -->
   <div id="main-area">
-    <!-- Sidebar -->
     <div id="sidebar">
       <button class="nav-btn active" data-panel="chat"      onclick="showPanel('chat',this)"      title="Chat">💬 <span class="nav-label">Chat</span></button>
       <button class="nav-btn"        data-panel="controls"  onclick="showPanel('controls',this)"  title="Controles">🎮 <span class="nav-label">Controles</span></button>
@@ -940,10 +1034,9 @@ html, body {
       <button class="nav-btn" id="nav-admin" data-panel="admin" onclick="showPanel('admin',this)" title="Admin" style="display:none">👑 <span class="nav-label">Admin</span></button>
     </div>
 
-    <!-- Content -->
     <div id="content">
 
-      <!-- ── CHAT ── -->
+      <!-- CHAT -->
       <div id="panel-chat" class="panel active">
         <div id="chat-messages"></div>
         <div id="chat-input-area">
@@ -956,7 +1049,7 @@ html, body {
         </div>
       </div>
 
-      <!-- ── CONTROLES ── -->
+      <!-- CONTROLES -->
       <div id="panel-controls" class="panel">
         <div class="panel-title">🎮 Controles</div>
 
@@ -978,7 +1071,6 @@ html, body {
           </div>
         </div>
 
-        <!-- ── CONTROLE DE DISTÂNCIA ── -->
         <div class="card">
           <div class="card-title">🎯 Controle de Distância</div>
           <div class="dist-control">
@@ -1002,8 +1094,7 @@ html, body {
             <div class="dist-slider-wrap">
               <div class="slider-row">
                 <span class="slider-label">Distância</span>
-                <input class="slider" type="range" min="0" max="500" value="0" id="slider-dist"
-                  oninput="updateDist(this.value)">
+                <input class="slider" type="range" min="0" max="500" value="0" id="slider-dist" oninput="updateDist(this.value)">
                 <span class="slider-val" id="val-dist">0 cm</span>
               </div>
               <div class="dist-presets">
@@ -1052,7 +1143,7 @@ html, body {
         </div>
       </div>
 
-      <!-- ── MÓDULOS ── -->
+      <!-- MÓDULOS -->
       <div id="panel-modules" class="panel">
         <div class="panel-title">⚡ Módulos</div>
         <div class="card">
@@ -1062,15 +1153,13 @@ html, body {
         </div>
       </div>
 
-      <!-- ── SMART HOME ── -->
+      <!-- SMART HOME -->
       <div id="panel-smarthome" class="panel">
         <div class="panel-title">🏠 Smart Home</div>
         <div class="card">
           <div class="card-title">Dispositivos</div>
           <div class="home-grid" id="devices-grid">
-            <div class="empty-state" style="grid-column:1/-1">
-              <span class="empty-icon">🏠</span>Configure GH_DEVICES em config.py
-            </div>
+            <div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">🏠</span>Configure GH_DEVICES em config.py</div>
           </div>
         </div>
         <div class="card">
@@ -1082,7 +1171,7 @@ html, body {
         </div>
       </div>
 
-      <!-- ── OBS ── -->
+      <!-- OBS -->
       <div id="panel-obs" class="panel">
         <div class="panel-title">📡 OBS Studio</div>
         <div class="card">
@@ -1102,21 +1191,20 @@ html, body {
         </div>
       </div>
 
-      <!-- ── LOGS ── -->
+      <!-- LOGS -->
       <div id="panel-logs" class="panel">
         <div class="panel-title">📋 Logs em Tempo Real</div>
         <div style="display:flex;gap:8px;margin-bottom:8px;flex-shrink:0">
           <button class="btn-sm" onclick="clearLogs()">🗑 Limpar</button>
           <button class="btn-sm" onclick="loadLogs()">🔄 Atualizar</button>
           <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--dim2);margin-left:auto;cursor:pointer">
-            <input type="checkbox" id="log-autoscroll" checked style="accent-color:var(--accent)">
-            Auto-scroll
+            <input type="checkbox" id="log-autoscroll" checked style="accent-color:var(--accent)"> Auto-scroll
           </label>
         </div>
         <div id="log-box"></div>
       </div>
 
-      <!-- ── CONFIGS ── -->
+      <!-- CONFIGS -->
       <div id="panel-configs" class="panel">
         <div class="panel-title">⚙️ Configurações</div>
         <div class="card">
@@ -1141,9 +1229,16 @@ html, body {
           </div>
           <button class="btn-primary" onclick="saveConfigs()" style="margin-top:12px">💾 Salvar</button>
         </div>
+        <div class="card" style="border-color:var(--border);margin-top:4px">
+          <div style="text-align:center;font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--dim);letter-spacing:1px;line-height:1.8">
+            🦊 KITSU NEXUS — Remote Control System<br>
+            © 2024 L.O.B.E.X.T.I Studios<br>
+            Todos os direitos reservados.
+          </div>
+        </div>
       </div>
 
-      <!-- ── ADMIN ── -->
+      <!-- ADMIN -->
       <div id="panel-admin" class="panel" style="display:none">
         <div class="panel-title">👑 Painel Administrativo</div>
         <div class="admin-tabs">
@@ -1152,7 +1247,6 @@ html, body {
           <button class="admin-tab" onclick="switchAdminTab('sessions',this)">🔌 Sessões</button>
         </div>
 
-        <!-- Usuários -->
         <div class="admin-section active" id="admin-users">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
             <span style="font-size:.82rem;color:var(--dim2)" id="users-count"></span>
@@ -1166,7 +1260,6 @@ html, body {
           </div>
         </div>
 
-        <!-- Adicionar -->
         <div class="admin-section" id="admin-add">
           <div class="inline-form">
             <div class="card-title" style="margin-bottom:12px">Novo Usuário</div>
@@ -1187,7 +1280,6 @@ html, body {
           </div>
         </div>
 
-        <!-- Sessões -->
         <div class="admin-section" id="admin-sessions">
           <div style="display:flex;justify-content:space-between;margin-bottom:10px">
             <span style="font-size:.82rem;color:var(--dim2)" id="sessions-info"></span>
@@ -1202,10 +1294,9 @@ html, body {
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main-area -->
+    </div>
+  </div>
 
-  <!-- Mobile Bottom Nav -->
   <nav id="mobile-nav">
     <button class="mob-nav-btn active" onclick="showPanel('chat',this)"      data-panel="chat">💬<span>Chat</span></button>
     <button class="mob-nav-btn"        onclick="showPanel('controls',this)"  data-panel="controls">🎮<span>Ctrl</span></button>
@@ -1214,7 +1305,7 @@ html, body {
     <button class="mob-nav-btn"        onclick="showPanel('logs',this)"      data-panel="logs">📋<span>Logs</span></button>
     <button class="mob-nav-btn" id="mob-admin-btn" onclick="showPanel('admin',this)" data-panel="admin" style="display:none">👑<span>Admin</span></button>
   </nav>
-</div><!-- /app -->
+</div>
 
 <!-- ============================================================ JAVASCRIPT ============================================================ -->
 <script>
@@ -1233,23 +1324,25 @@ const STATE = {
   mediaRecorder: null,
   audioChunks:  [],
   currentDist:  0,
+  banCountdownInterval: null,
 };
 
 const BASE = window.location.origin;
+const MAX_ATTEMPTS = 5;
 
 const ALL_PERMISSIONS = [
-  {key:'chat',       label:'💬 Chat',        desc:'Enviar mensagens'},
-  {key:'controles',  label:'🎮 Controles',   desc:'Emoções e ações'},
-  {key:'emocoes',    label:'😊 Emoções',     desc:'Controlar emoções VTS'},
-  {key:'modulos',    label:'⚡ Módulos',     desc:'Ligar/desligar módulos'},
-  {key:'smart_home', label:'🏠 Smart Home',  desc:'Controlar dispositivos'},
-  {key:'obs',        label:'📡 OBS',         desc:'Controlar OBS Studio'},
-  {key:'logs',       label:'📋 Logs',        desc:'Ver logs do sistema'},
-  {key:'tts',        label:'🔊 TTS',         desc:'Mudar motor de voz'},
-  {key:'elevenlabs', label:'🎵 ElevenLabs',  desc:'Usar ElevenLabs'},
-  {key:'visao',      label:'👁 Visão',       desc:'Câmera e visão'},
-  {key:'memoria',    label:'🧠 Memória',     desc:'Ver memória da Kitsu'},
-  {key:'configs',    label:'⚙️ Configs',     desc:'Mudar configurações'},
+  {key:'chat',       label:'💬 Chat'},
+  {key:'controles',  label:'🎮 Controles'},
+  {key:'emocoes',    label:'😊 Emoções'},
+  {key:'modulos',    label:'⚡ Módulos'},
+  {key:'smart_home', label:'🏠 Smart Home'},
+  {key:'obs',        label:'📡 OBS'},
+  {key:'logs',       label:'📋 Logs'},
+  {key:'tts',        label:'🔊 TTS'},
+  {key:'elevenlabs', label:'🎵 ElevenLabs'},
+  {key:'visao',      label:'👁 Visão'},
+  {key:'memoria',    label:'🧠 Memória'},
+  {key:'configs',    label:'⚙️ Configs'},
 ];
 
 // ============================================================
@@ -1290,7 +1383,7 @@ async function api(endpoint, method='GET', body=null) {
     const r = await fetch(BASE+endpoint, opts);
     const d = await r.json();
     if(r.status===401){ showLogin(); return null; }
-    if(r.status===403){ showAlert(d.error||'Sem permissão','error'); return null; }
+    if(r.status===403){ showAlert(d.error||'Acesso negado','error'); return null; }
     return d;
   } catch(e){
     showAlert('Erro de rede: '+e.message,'error'); return null;
@@ -1303,50 +1396,202 @@ function hasPerm(perm) {
 }
 
 // ============================================================
+// LOGIN ERROR — sistema melhorado
+// ============================================================
+
+// Mapa de code → { type, icon, title, msg_override? }
+const ERROR_MAP = {
+  MISSING_CREDENTIALS: {
+    type: 'type-generic', icon: '📝',
+    title: 'Campos obrigatórios',
+  },
+  USER_NOT_FOUND: {
+    type: 'type-not-found', icon: '👤',
+    title: 'Usuário não encontrado',
+  },
+  WRONG_PASSWORD: {
+    type: 'type-wrong-pass', icon: '🔑',
+    title: 'Senha incorreta',
+  },
+  WRONG_PASSWORD_LOCKED: {
+    type: 'type-too-many', icon: '🔒',
+    title: 'Conta bloqueada temporariamente',
+  },
+  ACCOUNT_BLOCKED: {
+    type: 'type-blocked', icon: '🚫',
+    title: 'Conta bloqueada',
+  },
+  BANNED_TEMPORARY: {
+    type: 'type-banned-temp', icon: '⏳',
+    title: 'Conta banida temporariamente',
+  },
+  BANNED_PERMANENT: {
+    type: 'type-banned-perm', icon: '⛔',
+    title: 'Conta banida permanentemente',
+  },
+  TOO_MANY_ATTEMPTS: {
+    type: 'type-too-many', icon: '🛑',
+    title: 'Muitas tentativas',
+  },
+  SESSION_EXPIRED: {
+    type: 'type-generic', icon: '⏰',
+    title: 'Sessão expirada',
+  },
+  SESSION_LIMIT: {
+    type: 'type-generic', icon: '🔗',
+    title: 'Limite de sessões',
+  },
+  NETWORK: {
+    type: 'type-network', icon: '📡',
+    title: 'Erro de conexão',
+  },
+};
+
+function showLoginError(errorData) {
+  // errorData pode ser string (legado) ou objeto { error, code, attempts_remaining, remaining }
+  const el        = document.getElementById('login-error');
+  const iconEl    = document.getElementById('login-error-icon');
+  const titleEl   = document.getElementById('login-error-title');
+  const msgEl     = document.getElementById('login-error-msg');
+  const barEl     = document.getElementById('attempts-bar');
+  const fillEl    = document.getElementById('attempts-fill');
+  const labelEl   = document.getElementById('attempts-label');
+  const cdEl      = document.getElementById('ban-countdown');
+
+  // Limpa estado anterior
+  el.className = 'login-error';
+  barEl.classList.remove('show');
+  cdEl.style.display = 'none';
+  if(STATE.banCountdownInterval) { clearInterval(STATE.banCountdownInterval); STATE.banCountdownInterval = null; }
+
+  // Normaliza input
+  let code = 'GENERIC', msg = '', attemptsRemaining = null;
+  if(typeof errorData === 'string') {
+    msg = errorData;
+  } else {
+    code = errorData.code || 'GENERIC';
+    msg  = errorData.error || '';
+    attemptsRemaining = errorData.attempts_remaining ?? null;
+  }
+
+  const def = ERROR_MAP[code] || { type:'type-generic', icon:'❌', title:'Erro' };
+
+  el.classList.add('show', def.type);
+  iconEl.textContent  = def.icon;
+  titleEl.textContent = def.title;
+  msgEl.textContent   = msg;
+
+  // ── Barra de tentativas ──
+  if(attemptsRemaining !== null) {
+    const pct = (attemptsRemaining / MAX_ATTEMPTS) * 100;
+    let color = 'var(--ok)';
+    if(attemptsRemaining <= 1) color = 'var(--err)';
+    else if(attemptsRemaining <= 2) color = 'var(--warning)';
+    fillEl.style.width = pct + '%';
+    fillEl.style.background = color;
+    labelEl.textContent = `TENTATIVAS RESTANTES: ${attemptsRemaining}/${MAX_ATTEMPTS}`;
+    barEl.classList.add('show');
+  }
+
+  // ── Shake nos inputs ──
+  ['login-user','login-pass'].forEach(id => {
+    const inp = document.getElementById(id);
+    inp.classList.add('error');
+    setTimeout(() => inp.classList.remove('error'), 600);
+  });
+
+  // ── Countdown para ban temporário / lockout ──
+  if(code === 'BANNED_TEMPORARY' || code === 'TOO_MANY_ATTEMPTS' || code === 'WRONG_PASSWORD_LOCKED') {
+    // Extrai tempo restante da mensagem se possível
+    const match = msg.match(/(\d+)m (\d+)s/);
+    if(match) {
+      let secs = parseInt(match[1]) * 60 + parseInt(match[2]);
+      cdEl.style.display = 'flex';
+      const timerEl = document.getElementById('ban-timer');
+      function tick() {
+        const m = Math.floor(secs/60), s = secs % 60;
+        timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        if(secs <= 0) { clearInterval(STATE.banCountdownInterval); STATE.banCountdownInterval = null; cdEl.style.display='none'; }
+        secs--;
+      }
+      tick();
+      STATE.banCountdownInterval = setInterval(tick, 1000);
+    }
+  }
+}
+
+function clearLoginError() {
+  const el = document.getElementById('login-error');
+  el.className = 'login-error';
+  document.getElementById('attempts-bar').classList.remove('show');
+  document.getElementById('ban-countdown').style.display = 'none';
+  if(STATE.banCountdownInterval) { clearInterval(STATE.banCountdownInterval); STATE.banCountdownInterval = null; }
+}
+
+// ============================================================
 // LOGIN / LOGOUT
 // ============================================================
 async function doLogin() {
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value;
-  if(!user||!pass){ showLoginError('Preencha usuário e senha'); return; }
+
+  clearLoginError();
+
+  if(!user || !pass) {
+    showLoginError({ code:'MISSING_CREDENTIALS', error:'Preencha o usuário e a senha para continuar.' });
+    return;
+  }
 
   const btn = document.getElementById('btn-login');
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
 
-  const data = await fetch(BASE+'/api/login',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({username:user,password:pass}),
-  }).then(r=>r.json()).catch(e=>({error:e.message}));
+  let data;
+  try {
+    const r = await fetch(BASE+'/api/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username:user, password:pass}),
+    });
+    data = await r.json();
+  } catch(e) {
+    btn.disabled = false; btn.innerHTML = 'ENTRAR';
+    showLoginError({ code:'NETWORK', error:'Não foi possível conectar ao servidor. Verifique sua conexão.' });
+    return;
+  }
 
-  btn.disabled=false; btn.innerHTML='ENTRAR';
+  btn.disabled = false; btn.innerHTML = 'ENTRAR';
 
-  if(data.error){ showLoginError(data.error); return; }
+  if(data.error || !data.success) {
+    showLoginError(data);
+    return;
+  }
 
-  STATE.token      = data.token;
-  STATE.username   = data.username;
-  STATE.role       = data.role;
-  STATE.cargo      = data.cargo||'';
-  STATE.permissions= data.permissions||{};
-  STATE.supreme    = data.supreme||false;
+  // Sucesso
+  clearLoginError();
+  STATE.token       = data.token;
+  STATE.username    = data.username;
+  STATE.role        = data.role;
+  STATE.cargo       = data.cargo || '';
+  STATE.permissions = data.permissions || {};
+  STATE.supreme     = data.supreme || false;
 
-  localStorage.setItem('kn_token',  data.token);
-  localStorage.setItem('kn_user',   data.username);
-  localStorage.setItem('kn_role',   data.role);
-  localStorage.setItem('kn_cargo',  data.cargo||'');
-  localStorage.setItem('kn_perms',  JSON.stringify(data.permissions||{}));
-  localStorage.setItem('kn_supreme',data.supreme?'true':'false');
+  localStorage.setItem('kn_token',   data.token);
+  localStorage.setItem('kn_user',    data.username);
+  localStorage.setItem('kn_role',    data.role);
+  localStorage.setItem('kn_cargo',   data.cargo || '');
+  localStorage.setItem('kn_perms',   JSON.stringify(data.permissions || {}));
+  localStorage.setItem('kn_supreme', data.supreme ? 'true' : 'false');
 
   startApp();
 }
 
-document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
-document.getElementById('login-user').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
-
-function showLoginError(msg) {
-  const el=document.getElementById('login-error');
-  el.textContent=msg; el.classList.add('show');
-}
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+// Limpa erro ao digitar
+['login-user','login-pass'].forEach(id => {
+  document.getElementById(id).addEventListener('input', clearLoginError);
+});
 
 async function doLogout() {
   await api('/api/logout','POST');
@@ -1362,7 +1607,7 @@ function clearSession(){
 function showLogin(){
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-screen').style.display='flex';
-  document.getElementById('login-error').classList.remove('show');
+  clearLoginError();
   document.getElementById('login-user').value='';
   document.getElementById('login-pass').value='';
 }
@@ -1374,8 +1619,8 @@ function startApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
 
-  document.getElementById('topbar-username').textContent=STATE.username;
-  const badge=document.getElementById('topbar-badge');
+  document.getElementById('topbar-username').textContent = STATE.username;
+  const badge = document.getElementById('topbar-badge');
   if(STATE.supreme){ badge.textContent='👑 ADM SUPREMO'; badge.className='badge supreme'; }
   else if(STATE.role==='admin'){ badge.textContent='⚡ Admin'; badge.className='badge admin'; }
   else{ badge.textContent=STATE.cargo||'Usuário'; badge.className='badge'; }
@@ -1388,7 +1633,7 @@ function startApp(){
   filterNav();
   connectSocket();
   loadModuleStatus();
-  setInterval(loadModuleStatus,5000);
+  setInterval(loadModuleStatus, 5000);
   loadLogs(); loadOBSScenes(); loadDevices(); buildNewPermsGrid();
   if(STATE.role==='admin'||STATE.supreme){ loadAdminUsers(); loadSessions(); }
   loadConfigs();
@@ -1407,46 +1652,46 @@ function filterNav(){
 // ============================================================
 function connectSocket(){
   if(STATE.socket) STATE.socket.disconnect();
-  STATE.socket=io(BASE,{query:{token:STATE.token},reconnection:true,reconnectionDelay:2000});
+  STATE.socket = io(BASE, {query:{token:STATE.token}, reconnection:true, reconnectionDelay:2000});
 
-  STATE.socket.on('connect',()=>setOnlineStatus(true));
-  STATE.socket.on('disconnect',()=>setOnlineStatus(false));
-  STATE.socket.on('connected',d=>addSystemMessage('🔗 Conectado — '+d.message));
-  STATE.socket.on('chat_message',d=>appendChatMessage(d.author,d.message,d.type,d.timestamp));
-  STATE.socket.on('alert',d=>showAlert(d.message,d.type||'info'));
-  STATE.socket.on('force_logout',d=>{
-    showAlert('⚠️ '+(d.reason||'Você foi desconectado pelo administrador'),'error');
-    setTimeout(()=>{ clearSession(); showLogin(); },2600);
+  STATE.socket.on('connect',    () => setOnlineStatus(true));
+  STATE.socket.on('disconnect', () => setOnlineStatus(false));
+  STATE.socket.on('connected',  d  => addSystemMessage('🔗 Conectado — '+d.message));
+  STATE.socket.on('chat_message', d => appendChatMessage(d.author, d.message, d.type, d.timestamp));
+  STATE.socket.on('alert', d => showAlert(d.message, d.type||'info'));
+  STATE.socket.on('force_logout', d => {
+    showAlert('⚠️ '+(d.reason||'Você foi desconectado pelo administrador'), 'error');
+    setTimeout(() => { clearSession(); showLogin(); }, 2600);
   });
-  STATE.socket.on('status_update',d=>{
+  STATE.socket.on('status_update', d => {
     setOnlineStatus(d.online);
-    if(d.kitsu_busy!==undefined)
-      document.getElementById('kitsu-speaking-indicator').style.display=d.kitsu_busy?'flex':'none';
+    if(d.kitsu_busy !== undefined)
+      document.getElementById('kitsu-speaking-indicator').style.display = d.kitsu_busy ? 'flex' : 'none';
   });
-  STATE.socket.on('log_line',d=>appendLogLine(d.line,d.timestamp));
+  STATE.socket.on('log_line', d => appendLogLine(d.line, d.timestamp));
 
-  setInterval(()=>{
-    if(STATE.socket&&STATE.socket.connected) STATE.socket.emit('ping_keep',{});
-  },20000);
+  setInterval(() => {
+    if(STATE.socket && STATE.socket.connected) STATE.socket.emit('ping_keep', {});
+  }, 20000);
 }
 
 function setOnlineStatus(online){
-  const dot=document.getElementById('conn-dot');
-  const lbl=document.getElementById('conn-label');
-  dot.className='status-dot'+(online?' online':'');
-  lbl.textContent=online?'online':'offline';
-  lbl.style.color=online?'var(--online)':'var(--offline)';
+  const dot = document.getElementById('conn-dot');
+  const lbl = document.getElementById('conn-label');
+  dot.className = 'status-dot' + (online?' online':'');
+  lbl.textContent = online ? 'online' : 'offline';
+  lbl.style.color = online ? 'var(--online)' : 'var(--offline)';
 }
 
 // ============================================================
 // NAVIGATION
 // ============================================================
-function showPanel(name,btn){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+function showPanel(name, btn){
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
 
-  const panel=document.getElementById('panel-'+name);
+  const panel = document.getElementById('panel-'+name);
   if(panel) panel.classList.add('active');
   if(btn) btn.classList.add('active');
 
@@ -1463,44 +1708,44 @@ function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('e
 // CHAT
 // ============================================================
 function handleChatKey(e){
-  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendChat(); }
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
 }
 
 async function sendChat(){
-  const inp=document.getElementById('chat-input');
-  const msg=inp.value.trim();
+  const inp = document.getElementById('chat-input');
+  const msg = inp.value.trim();
   if(!msg) return;
   if(!hasPerm('chat')){ showAlert('Sem permissão de chat','error'); return; }
-  inp.value=''; inp.style.height='auto';
-  if(STATE.socket&&STATE.socket.connected){
-    STATE.socket.emit('chat_message',{message:msg});
+  inp.value = ''; inp.style.height = 'auto';
+  if(STATE.socket && STATE.socket.connected){
+    STATE.socket.emit('chat_message', {message:msg});
   } else {
-    const r=await api('/api/chat','POST',{message:msg});
+    const r = await api('/api/chat','POST',{message:msg});
     if(!r) return;
-    appendChatMessage(STATE.username,msg,'user',nowTime());
+    appendChatMessage(STATE.username, msg, 'user', nowTime());
   }
 }
 
-function appendChatMessage(author,message,type,timestamp){
-  const box=document.getElementById('chat-messages');
-  const div=document.createElement('div');
-  div.className='msg '+(type==='kitsu'?'kitsu':type==='user'?'user':'system');
+function appendChatMessage(author, message, type, timestamp){
+  const box = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg '+(type==='kitsu'?'kitsu':type==='user'?'user':'system');
 
-  let cleanMsg=message, emotionTag='';
-  const emoMap={'[FELIZ]':['feliz','😄'],'[BRAVA]':['brava','😠'],'[CORADA]':['corada','😳'],'[TRISTE]':['triste','😢']};
+  let cleanMsg = message, emotionTag = '';
+  const emoMap = {'[FELIZ]':['feliz','😄'],'[BRAVA]':['brava','😠'],'[CORADA]':['corada','😳'],'[TRISTE]':['triste','😢']};
   for(const [tag,[cls,emoji]] of Object.entries(emoMap)){
     if(message.includes(tag)){
-      cleanMsg=message.replace(tag,'');
-      emotionTag=`<span class="emotion-tag ${cls}">${emoji} ${cls.toUpperCase()}</span>`;
+      cleanMsg = message.replace(tag,'');
+      emotionTag = `<span class="emotion-tag ${cls}">${emoji} ${cls.toUpperCase()}</span>`;
       break;
     }
   }
 
   if(type==='system'){
-    div.innerHTML=`<div class="msg-bubble">${escHtml(message)}</div>`;
+    div.innerHTML = `<div class="msg-bubble">${escHtml(message)}</div>`;
   } else {
-    const avatar=type==='kitsu'?'🦊':'👤';
-    div.innerHTML=`
+    const avatar = type==='kitsu'?'🦊':'👤';
+    div.innerHTML = `
       <div class="msg-avatar">${avatar}</div>
       <div>
         <div class="msg-bubble">${escHtml(cleanMsg.trim())}${emotionTag}</div>
@@ -1508,93 +1753,86 @@ function appendChatMessage(author,message,type,timestamp){
       </div>`;
   }
   box.appendChild(div);
-  box.scrollTop=box.scrollHeight;
+  box.scrollTop = box.scrollHeight;
 }
 
-function addSystemMessage(msg){ appendChatMessage('',msg,'system',nowTime()); }
+function addSystemMessage(msg){ appendChatMessage('', msg, 'system', nowTime()); }
 
-// ── PTT ──
+// PTT
 function startPTT(e){
-  if(e&&e.type==='touchstart') e.preventDefault();
+  if(e && e.type==='touchstart') e.preventDefault();
   if(!hasPerm('chat')){ showAlert('Sem permissão','error'); return; }
   if(STATE.isRecording) return;
   navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
-    STATE.audioChunks=[];
-    STATE.mediaRecorder=new MediaRecorder(stream);
-    STATE.mediaRecorder.ondataavailable=ev=>STATE.audioChunks.push(ev.data);
-    STATE.mediaRecorder.onstop=sendAudio;
+    STATE.audioChunks = [];
+    STATE.mediaRecorder = new MediaRecorder(stream);
+    STATE.mediaRecorder.ondataavailable = ev => STATE.audioChunks.push(ev.data);
+    STATE.mediaRecorder.onstop = sendAudio;
     STATE.mediaRecorder.start();
-    STATE.isRecording=true;
+    STATE.isRecording = true;
     document.getElementById('btn-ptt').classList.add('recording');
     document.getElementById('ptt-floating').classList.add('recording');
     showAlert('🎤 Gravando... solte para parar','info');
-  }).catch(e=>showAlert('Erro no microfone: '+e.message,'error'));
+  }).catch(e => showAlert('Erro no microfone: '+e.message,'error'));
 }
 
 function stopPTT(e){
-  if(e&&e.type==='touchend') e.preventDefault();
-  if(!STATE.isRecording||!STATE.mediaRecorder) return;
+  if(e && e.type==='touchend') e.preventDefault();
+  if(!STATE.isRecording || !STATE.mediaRecorder) return;
   STATE.mediaRecorder.stop();
-  STATE.mediaRecorder.stream.getTracks().forEach(t=>t.stop());
-  STATE.isRecording=false;
+  STATE.mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  STATE.isRecording = false;
   document.getElementById('btn-ptt').classList.remove('recording');
   document.getElementById('ptt-floating').classList.remove('recording');
 }
 
 async function sendAudio(){
-  const blob=new Blob(STATE.audioChunks,{type:'audio/webm'});
-  const form=new FormData();
-  form.append('audio',blob,'voice.webm');
-  try{
-    const r=await fetch(BASE+'/api/voice',{method:'POST',headers:{'X-Auth-Token':STATE.token},body:form});
-    const d=await r.json();
-    if(d.transcription){ document.getElementById('chat-input').value=d.transcription; showAlert('🎤 '+d.transcription,'success'); }
-  }catch(e){ showAlert('Erro no áudio: '+e.message,'error'); }
+  const blob = new Blob(STATE.audioChunks, {type:'audio/webm'});
+  const form = new FormData();
+  form.append('audio', blob, 'voice.webm');
+  try {
+    const r = await fetch(BASE+'/api/voice', {method:'POST', headers:{'X-Auth-Token':STATE.token}, body:form});
+    const d = await r.json();
+    if(d.transcription){ document.getElementById('chat-input').value = d.transcription; showAlert('🎤 '+d.transcription,'success'); }
+  } catch(e){ showAlert('Erro no áudio: '+e.message,'error'); }
 }
 
-// PTT events — mobile floating button
-const pttF=document.getElementById('ptt-floating');
-pttF.addEventListener('mousedown',startPTT);
-pttF.addEventListener('mouseup',stopPTT);
-pttF.addEventListener('touchstart',startPTT,{passive:false});
-pttF.addEventListener('touchend',stopPTT,{passive:false});
-
-// PTT atalho F10
-document.addEventListener('keydown',e=>{ if(e.key==='F10'&&!STATE.isRecording){ e.preventDefault(); startPTT(); } });
-document.addEventListener('keyup',  e=>{ if(e.key==='F10'&&STATE.isRecording)  stopPTT(); });
+const pttF = document.getElementById('ptt-floating');
+pttF.addEventListener('mousedown', startPTT);
+pttF.addEventListener('mouseup',   stopPTT);
+pttF.addEventListener('touchstart', startPTT, {passive:false});
+pttF.addEventListener('touchend',   stopPTT,  {passive:false});
+document.addEventListener('keydown', e => { if(e.key==='F10' && !STATE.isRecording){ e.preventDefault(); startPTT(); } });
+document.addEventListener('keyup',   e => { if(e.key==='F10' && STATE.isRecording)  stopPTT(); });
 
 // ============================================================
 // DISTÂNCIA
 // ============================================================
 function updateDist(val){
-  STATE.currentDist=parseInt(val);
-  document.getElementById('dist-num').textContent=val;
-  document.getElementById('val-dist').textContent=val+' cm';
-  // Atualiza anel SVG (circunferência = 2π×65 ≈ 408.4)
-  const pct=val/500;
-  const offset=408.4*(1-pct);
-  document.getElementById('dist-arc').style.strokeDashoffset=offset;
-  // Destaca preset ativo
+  STATE.currentDist = parseInt(val);
+  document.getElementById('dist-num').textContent = val;
+  document.getElementById('val-dist').textContent = val+' cm';
+  const pct = val/500;
+  const offset = 408.4*(1-pct);
+  document.getElementById('dist-arc').style.strokeDashoffset = offset;
   document.querySelectorAll('.dist-preset').forEach(b=>{
-    b.classList.toggle('active', parseInt(b.textContent)===parseInt(val)||
-      (b.textContent==='1m'&&val===100)||(b.textContent==='2m'&&val===200)||
-      (b.textContent==='3m'&&val===300)||(b.textContent==='5m'&&val===500));
+    b.classList.toggle('active',
+      parseInt(b.textContent)===parseInt(val)||
+      (b.textContent==='1m'&&val==100)||(b.textContent==='2m'&&val==200)||
+      (b.textContent==='3m'&&val==300)||(b.textContent==='5m'&&val==500));
   });
 }
 
-function setDist(v){
-  document.getElementById('slider-dist').value=v;
-  updateDist(v);
-}
+function setDist(v){ document.getElementById('slider-dist').value=v; updateDist(v); }
 
 async function sendDist(){
-  const dist=STATE.currentDist;
-  const msg=`ajuste a distância para ${dist} centímetros`;
-  if(STATE.socket&&STATE.socket.connected){
-    STATE.socket.emit('chat_message',{message:msg});
+  const dist = STATE.currentDist;
+  const msg = `ajuste a distância para ${dist} centímetros`;
+  if(STATE.socket && STATE.socket.connected){
+    STATE.socket.emit('chat_message', {message:msg});
     showAlert(`📡 Distância ${dist}cm enviada`,'success');
   } else {
-    const r=await api('/api/chat','POST',{message:msg});
+    const r = await api('/api/chat','POST',{message:msg});
     if(r) showAlert(`📡 Distância ${dist}cm enviada`,'success');
   }
 }
@@ -1604,78 +1842,79 @@ async function sendDist(){
 // ============================================================
 async function setEmotion(emotion){
   if(!hasPerm('emocoes')){ showAlert('Sem permissão','error'); return; }
-  const r=await api('/api/emotion','POST',{emotion});
-  if(r&&r.success) showAlert('Emoção: '+emotion,'success');
+  const r = await api('/api/emotion','POST',{emotion});
+  if(r && r.success) showAlert('Emoção: '+emotion,'success');
 }
 
 // ============================================================
 // TTS
 // ============================================================
 async function speakTTS(){
-  const text=document.getElementById('tts-text').value.trim();
+  const text = document.getElementById('tts-text').value.trim();
   if(!text){ showAlert('Escreva algo para falar','warning'); return; }
   if(!hasPerm('controles')){ showAlert('Sem permissão','error'); return; }
-  const r=await api('/api/tts/speak','POST',{text});
-  if(r&&r.success){ showAlert('▶ Falando...','success'); document.getElementById('tts-text').value=''; }
+  const r = await api('/api/tts/speak','POST',{text});
+  if(r && r.success){ showAlert('▶ Falando...','success'); document.getElementById('tts-text').value=''; }
 }
 
 async function setTTSMode(mode){
   if(!hasPerm('tts')){ showAlert('Sem permissão para mudar TTS','error'); return; }
-  const r=await api('/api/tts/mode','POST',{mode});
-  if(r&&r.success) showAlert('TTS: '+mode.toUpperCase(),'success');
+  const r = await api('/api/tts/mode','POST',{mode});
+  if(r && r.success) showAlert('TTS: '+mode.toUpperCase(),'success');
 }
 
 // ============================================================
 // SLIDERS
 // ============================================================
-function updateSlider(id,val){
-  const maps={mic:['val-mic',v=>v],nst:['val-nst',v=>(parseInt(v)/100).toFixed(2)],sil:['val-sil',v=>v+'s']};
-  if(maps[id]) document.getElementById(maps[id][0]).textContent=maps[id][1](val);
+function updateSlider(id, val){
+  const maps = {mic:['val-mic',v=>v], nst:['val-nst',v=>(parseInt(v)/100).toFixed(2)], sil:['val-sil',v=>v+'s']};
+  if(maps[id]) document.getElementById(maps[id][0]).textContent = maps[id][1](val);
 }
+
 async function saveSliders(){
   if(!hasPerm('configs')){ showAlert('Sem permissão','error'); return; }
-  const r=await api('/api/config/set','POST',{
-    MIC_SENSIBILIDADE:parseInt(document.getElementById('slider-mic').value),
-    SILENCIO_TIMEOUT:parseInt(document.getElementById('slider-sil').value),
+  const r = await api('/api/config/set','POST',{
+    MIC_SENSIBILIDADE: parseInt(document.getElementById('slider-mic').value),
+    SILENCIO_TIMEOUT:  parseInt(document.getElementById('slider-sil').value),
   });
-  if(r&&r.success) showAlert('Sliders salvos','success');
+  if(r && r.success) showAlert('Sliders salvos','success');
 }
 
 // ============================================================
 // AÇÕES RÁPIDAS
 // ============================================================
 async function quickAction(action){
-  const msgs={pesquisa:'pesquisa algo pra mim',camera:'olha a tela',hora:'que horas são',status:'qual o status do sistema',memoria:'o que você lembra de mim',silencio:'fica quieta por um tempo'};
-  const msg=msgs[action];
+  const msgs = {pesquisa:'pesquisa algo pra mim',camera:'olha a tela',hora:'que horas são',status:'qual o status do sistema',memoria:'o que você lembra de mim',silencio:'fica quieta por um tempo'};
+  const msg = msgs[action];
   if(!msg) return;
   if(!hasPerm('chat')){ showAlert('Sem permissão','error'); return; }
-  if(STATE.socket&&STATE.socket.connected) STATE.socket.emit('chat_message',{message:msg});
+  if(STATE.socket && STATE.socket.connected) STATE.socket.emit('chat_message',{message:msg});
   else await api('/api/chat','POST',{message:msg});
-  showPanel('chat',document.querySelector('[data-panel="chat"]'));
+  showPanel('chat', document.querySelector('[data-panel="chat"]'));
 }
 
 // ============================================================
 // MÓDULOS
 // ============================================================
 async function loadModuleStatus(){
-  const r=await api('/api/modules/status');
+  const r = await api('/api/modules/status');
   if(!r) return;
-  const bar=document.getElementById('module-status-bar');
-  bar.innerHTML='';
+  const bar = document.getElementById('module-status-bar');
+  bar.innerHTML = '';
   [{key:'vts',label:'VTS',val:r.vts},{key:'browser',label:'Browser',val:r.browser},
    {key:'obs',label:'OBS',val:r.obs},{key:'online',label:'Internet',val:r.online}]
-  .forEach(ind=>{ bar.innerHTML+=`<div class="status-indicator"><div class="ind-dot ${ind.val?'on':'off'}"></div>${ind.label}</div>`; });
+  .forEach(ind => { bar.innerHTML += `<div class="status-indicator"><div class="ind-dot ${ind.val?'on':'off'}"></div>${ind.label}</div>`; });
 
-  const list=document.getElementById('module-list');
-  list.innerHTML='';
-  const mods=[
+  const list = document.getElementById('module-list');
+  list.innerHTML = '';
+  const mods = [
     {key:'streamer',icon:'📡',name:'Modo Streamer',desc:'OBS + YouTube Live',val:r.streamer},
     {key:'pc_audio',icon:'🖥️',name:'Áudio PC',desc:'Captura loopback',val:r.pc_audio},
     {key:'visao',icon:'👁',name:'Visão',desc:'Câmera / tela',val:r.visao},
   ];
-  mods.forEach(m=>{
-    const canToggle=hasPerm('modulos');
-    list.innerHTML+=`
+  mods.forEach(m => {
+    const canToggle = hasPerm('modulos');
+    list.innerHTML += `
       <div class="module-item">
         <div class="module-icon">${m.icon}</div>
         <div class="module-info">
@@ -1683,53 +1922,52 @@ async function loadModuleStatus(){
           <div class="module-desc">${m.desc}</div>
         </div>
         <span class="module-status ${m.val?'on':'off'}">${m.val?'ON':'OFF'}</span>
-        ${canToggle?`
-        <label class="toggle">
+        ${canToggle?`<label class="toggle">
           <input type="checkbox" ${m.val?'checked':''} onchange="toggleModule('${m.key}',this.checked)">
           <div class="toggle-track"></div><div class="toggle-thumb"></div>
         </label>`:''}
       </div>`;
   });
-  document.getElementById('cfg-tts-mode').value=r.tts_mode||'edge';
+  document.getElementById('cfg-tts-mode').value = r.tts_mode||'edge';
 }
 
-async function toggleModule(mod,val){
+async function toggleModule(mod, val){
   if(!hasPerm('modulos')){ showAlert('Sem permissão','error'); return; }
-  const r=await api('/api/modules/toggle','POST',{module:mod,value:val});
-  if(r&&r.success) showAlert(`${mod}: ${val?'Ativado':'Desativado'}`,'success');
+  const r = await api('/api/modules/toggle','POST',{module:mod,value:val});
+  if(r && r.success) showAlert(`${mod}: ${val?'Ativado':'Desativado'}`,'success');
 }
 
 // ============================================================
 // SMART HOME
 // ============================================================
 async function loadDevices(){
-  const r=await api('/api/smarthome/devices');
+  const r = await api('/api/smarthome/devices');
   if(!r) return;
-  const grid=document.getElementById('devices-grid');
-  if(!r.devices||!r.devices.length){
-    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">🏠</span>Configure GH_DEVICES em config.py</div>`;
+  const grid = document.getElementById('devices-grid');
+  if(!r.devices || !r.devices.length){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">🏠</span>Configure GH_DEVICES em config.py</div>`;
     return;
   }
-  const icons={luz:'💡',ar:'❄️',tv:'📺',televisao:'📺',ventilador:'🌀',default:'🔌'};
-  grid.innerHTML=r.devices.map(d=>{
-    const icon=icons[d]||icons.default;
+  const icons = {luz:'💡',ar:'❄️',tv:'📺',televisao:'📺',ventilador:'🌀',default:'🔌'};
+  grid.innerHTML = r.devices.map(d => {
+    const icon = icons[d]||icons.default;
     return `<div class="home-device off" onclick="toggleDevice('${d}',this)">
       <span class="dev-icon">${icon}</span><span class="dev-name">${d}</span>
     </div>`;
   }).join('');
 }
 
-async function toggleDevice(device,el){
+async function toggleDevice(device, el){
   if(!hasPerm('smart_home')){ showAlert('Sem permissão','error'); return; }
-  const isOn=el.classList.contains('on');
-  const r=await api('/api/smarthome/command','POST',{command:`${isOn?'desliga':'liga'} ${device}`});
-  if(r&&r.success){ el.classList.toggle('on',!isOn); el.classList.toggle('off',isOn); showAlert(`${isOn?'Desligado':'Ligado'}: ${device}`,'success'); }
+  const isOn = el.classList.contains('on');
+  const r = await api('/api/smarthome/command','POST',{command:`${isOn?'desliga':'liga'} ${device}`});
+  if(r && r.success){ el.classList.toggle('on',!isOn); el.classList.toggle('off',isOn); showAlert(`${isOn?'Desligado':'Ligado'}: ${device}`,'success'); }
 }
 
 async function sendHomeCmd(){
-  const cmd=document.getElementById('home-cmd').value.trim();
+  const cmd = document.getElementById('home-cmd').value.trim();
   if(!cmd) return;
-  const r=await api('/api/smarthome/command','POST',{command:cmd});
+  const r = await api('/api/smarthome/command','POST',{command:cmd});
   if(r){ showAlert(r.response||'Comando enviado','success'); document.getElementById('home-cmd').value=''; }
 }
 
@@ -1737,21 +1975,21 @@ async function sendHomeCmd(){
 // OBS
 // ============================================================
 async function loadOBSScenes(){
-  const r=await api('/api/obs/scenes');
+  const r = await api('/api/obs/scenes');
   if(!r) return;
-  const grid=document.getElementById('scenes-grid');
-  if(!r.scenes||!r.scenes.length){
-    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">📡</span>Conecte o OBS WebSocket</div>`;
+  const grid = document.getElementById('scenes-grid');
+  if(!r.scenes || !r.scenes.length){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">📡</span>Conecte o OBS WebSocket</div>`;
     return;
   }
-  grid.innerHTML=r.scenes.map(s=>`<button class="scene-btn" onclick="switchScene('${escAttr(s)}')">${escHtml(s)}</button>`).join('');
+  grid.innerHTML = r.scenes.map(s => `<button class="scene-btn" onclick="switchScene('${escAttr(s)}')">${escHtml(s)}</button>`).join('');
 }
 
 async function switchScene(scene){
   if(!hasPerm('obs')){ showAlert('Sem permissão','error'); return; }
-  const r=await api('/api/obs/switch','POST',{scene});
-  if(r&&r.success){
-    document.querySelectorAll('.scene-btn').forEach(b=>b.classList.remove('active'));
+  const r = await api('/api/obs/switch','POST',{scene});
+  if(r && r.success){
+    document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
     showAlert('Cena: '+scene,'success');
   }
@@ -1763,76 +2001,76 @@ async function obsAction(action){ if(!hasPerm('obs')){ showAlert('Sem permissão
 // LOGS
 // ============================================================
 async function loadLogs(){
-  const r=await api('/api/logs?count=200');
+  const r = await api('/api/logs?count=200');
   if(!r) return;
-  const box=document.getElementById('log-box');
-  box.innerHTML='';
-  (r.logs||[]).forEach(line=>appendLogLine(line));
+  const box = document.getElementById('log-box');
+  box.innerHTML = '';
+  (r.logs||[]).forEach(line => appendLogLine(line));
 }
 
-function appendLogLine(line,ts){
-  const box=document.getElementById('log-box');
-  const div=document.createElement('div'); div.className='log-line';
+function appendLogLine(line, ts){
+  const box = document.getElementById('log-box');
+  const div = document.createElement('div'); div.className = 'log-line';
   if(line.includes('❌')||line.includes('ERROR')||line.includes('ERRO')) div.classList.add('err');
   else if(line.includes('✅')||line.includes('OK')) div.classList.add('ok');
   else if(line.includes('⚠️')||line.includes('WARN')) div.classList.add('warn');
   else if(line.includes('🌐')||line.includes('INFO')) div.classList.add('info');
-  div.textContent=(ts?`[${ts}] `:'')+line;
+  div.textContent = (ts?`[${ts}] `:'')+line;
   box.appendChild(div);
-  if(document.getElementById('log-autoscroll').checked) box.scrollTop=box.scrollHeight;
-  while(box.children.length>500) box.removeChild(box.firstChild);
+  if(document.getElementById('log-autoscroll').checked) box.scrollTop = box.scrollHeight;
+  while(box.children.length > 500) box.removeChild(box.firstChild);
 }
 
-function clearLogs(){ document.getElementById('log-box').innerHTML=''; }
+function clearLogs(){ document.getElementById('log-box').innerHTML = ''; }
 
 // ============================================================
 // CONFIGS
 // ============================================================
 async function loadConfigs(){
-  const r=await api('/api/config/get');
-  if(!r||!r.config) return;
-  const c=r.config;
-  if(c.TTS_MODO) document.getElementById('cfg-tts-mode').value=c.TTS_MODO;
-  if(c.AI_TEMPERATURE!=null) document.getElementById('cfg-temp').value=c.AI_TEMPERATURE;
-  if(c.AI_MAX_TOKENS!=null) document.getElementById('cfg-tokens').value=c.AI_MAX_TOKENS;
-  if(c.MIC_SENSIBILIDADE!=null){ document.getElementById('slider-mic').value=c.MIC_SENSIBILIDADE; updateSlider('mic',c.MIC_SENSIBILIDADE); }
-  if(c.SILENCIO_TIMEOUT!=null){ document.getElementById('slider-sil').value=c.SILENCIO_TIMEOUT; updateSlider('sil',c.SILENCIO_TIMEOUT); }
+  const r = await api('/api/config/get');
+  if(!r || !r.config) return;
+  const c = r.config;
+  if(c.TTS_MODO) document.getElementById('cfg-tts-mode').value = c.TTS_MODO;
+  if(c.AI_TEMPERATURE != null) document.getElementById('cfg-temp').value = c.AI_TEMPERATURE;
+  if(c.AI_MAX_TOKENS  != null) document.getElementById('cfg-tokens').value = c.AI_MAX_TOKENS;
+  if(c.MIC_SENSIBILIDADE != null){ document.getElementById('slider-mic').value = c.MIC_SENSIBILIDADE; updateSlider('mic',c.MIC_SENSIBILIDADE); }
+  if(c.SILENCIO_TIMEOUT  != null){ document.getElementById('slider-sil').value = c.SILENCIO_TIMEOUT;  updateSlider('sil',c.SILENCIO_TIMEOUT); }
 }
 
 async function saveConfigs(){
   if(!hasPerm('configs')){ showAlert('Sem permissão','error'); return; }
-  const r=await api('/api/config/set','POST',{
-    AI_TEMPERATURE:parseFloat(document.getElementById('cfg-temp').value),
-    AI_MAX_TOKENS:parseInt(document.getElementById('cfg-tokens').value),
+  const r = await api('/api/config/set','POST',{
+    AI_TEMPERATURE: parseFloat(document.getElementById('cfg-temp').value),
+    AI_MAX_TOKENS:  parseInt(document.getElementById('cfg-tokens').value),
   });
-  if(r&&r.success) showAlert('Configurações salvas','success');
+  if(r && r.success) showAlert('Configurações salvas','success');
 }
 
 // ============================================================
 // ADMIN — USUÁRIOS
 // ============================================================
 async function loadAdminUsers(){
-  if(STATE.role!=='admin'&&!STATE.supreme) return;
-  const r=await api('/api/admin/users');
+  if(STATE.role!=='admin' && !STATE.supreme) return;
+  const r = await api('/api/admin/users');
   if(!r) return;
-  document.getElementById('users-count').textContent=`${r.users.length} usuário(s)`;
-  const tbody=document.getElementById('users-tbody');
-  tbody.innerHTML='';
-  r.users.forEach(u=>{
-    const isSupreme=u.supreme, isSelf=u.username===STATE.username;
-    let statusLabel='';
-    if(u.banned) statusLabel=`<span class="user-badge banned">Banido</span> <small style="color:var(--dim2)">${u.ban_msg}</small>`;
-    else if(u.blocked) statusLabel=`<span class="user-badge blocked">Bloqueado</span>`;
-    else statusLabel=`<span style="color:var(--ok);font-size:.72rem">✅ Ativo</span>`;
+  document.getElementById('users-count').textContent = `${r.users.length} usuário(s)`;
+  const tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = '';
+  r.users.forEach(u => {
+    const isSupreme = u.supreme, isSelf = u.username===STATE.username;
+    let statusLabel = '';
+    if(u.banned) statusLabel = `<span class="user-badge banned">Banido</span> <small style="color:var(--dim2)">${u.ban_msg}</small>`;
+    else if(u.blocked) statusLabel = `<span class="user-badge blocked">Bloqueado</span>`;
+    else statusLabel = `<span style="color:var(--ok);font-size:.72rem">✅ Ativo</span>`;
 
-    let roleLabel='';
-    if(isSupreme) roleLabel='<span class="user-badge supreme">👑 Supremo</span>';
-    else if(u.role==='admin') roleLabel='<span class="user-badge admin">Admin</span>';
-    else roleLabel='<span class="user-badge user">User</span>';
+    let roleLabel = '';
+    if(isSupreme) roleLabel = '<span class="user-badge supreme">👑 Supremo</span>';
+    else if(u.role==='admin') roleLabel = '<span class="user-badge admin">Admin</span>';
+    else roleLabel = '<span class="user-badge user">User</span>';
 
-    const actions=isSupreme
-      ?'<span style="color:var(--dim2);font-size:.7rem">Protegido</span>'
-      :`<div class="action-btns">
+    const actions = isSupreme
+      ? '<span style="color:var(--dim2);font-size:.7rem">Protegido</span>'
+      : `<div class="action-btns">
           <button class="btn-sm" onclick='openEditUser(${JSON.stringify(u)})'>✏️ Editar</button>
           ${!isSelf?`
           <button class="btn-sm ${u.blocked?'ok':'warn'}" onclick="toggleBlock('${u.username}',${!u.blocked})">
@@ -1844,8 +2082,8 @@ async function loadAdminUsers(){
           <button class="btn-sm danger" onclick="deleteUser('${u.username}')">🗑 Deletar</button>`:''}
         </div>`;
 
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td><strong style="color:var(--white)">${escHtml(u.username)}</strong></td>
       <td style="color:var(--dim2)">${escHtml(u.cargo)}</td>
       <td>${roleLabel}</td><td>${statusLabel}</td><td>${actions}</td>`;
@@ -1854,15 +2092,15 @@ async function loadAdminUsers(){
 }
 
 async function loadSessions(){
-  if(STATE.role!=='admin'&&!STATE.supreme) return;
-  const r=await api('/api/admin/sessions');
+  if(STATE.role!=='admin' && !STATE.supreme) return;
+  const r = await api('/api/admin/sessions');
   if(!r) return;
-  document.getElementById('sessions-info').textContent=`${r.count}/${r.max} sessões ativas`;
-  const tbody=document.getElementById('sessions-tbody');
-  tbody.innerHTML='';
-  r.sessions.forEach(s=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+  document.getElementById('sessions-info').textContent = `${r.count}/${r.max} sessões ativas`;
+  const tbody = document.getElementById('sessions-tbody');
+  tbody.innerHTML = '';
+  r.sessions.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td><code style="color:var(--dim2)">${s.token_preview}</code></td>
       <td><strong style="color:var(--accent2)">${escHtml(s.username)}</strong></td>
       <td style="color:var(--dim2)">${s.connected_at.replace('T',' ').slice(0,19)}</td>
@@ -1874,15 +2112,14 @@ async function loadSessions(){
   });
 }
 
-// EDIT USER
 function openEditUser(user){
-  const permChecks=ALL_PERMISSIONS.map(p=>`
+  const permChecks = ALL_PERMISSIONS.map(p=>`
     <div class="perm-item">
       <input type="checkbox" id="ep-${p.key}" ${user.permissions[p.key]?'checked':''}>
       <label for="ep-${p.key}">${p.label}</label>
     </div>`).join('');
 
-  openModal('✏️ Editar: '+user.username,`
+  openModal('✏️ Editar: '+user.username, `
     <div class="form-group">
       <label class="form-label">Nova Senha (vazio = manter)</label>
       <input class="form-input" type="password" id="edit-pw" placeholder="nova senha">
@@ -1900,74 +2137,72 @@ function openEditUser(user){
     </div>
     <div class="card-title" style="margin-top:14px;margin-bottom:8px">Permissões</div>
     <div class="perm-grid">${permChecks}</div>
-  `,async()=>{
-    const perms={};
-    ALL_PERMISSIONS.forEach(p=>{ perms[p.key]=document.getElementById('ep-'+p.key).checked; });
-    const payload={username:user.username,cargo:document.getElementById('edit-cargo').value,role:document.getElementById('edit-role').value,permissions:perms};
-    const pw=document.getElementById('edit-pw').value;
-    if(pw) payload.password=pw;
-    const r=await api('/api/admin/users/update','POST',payload);
-    if(r&&r.success){ showAlert('Usuário atualizado','success'); closeModal(); loadAdminUsers(); }
+  `, async () => {
+    const perms = {};
+    ALL_PERMISSIONS.forEach(p => { perms[p.key] = document.getElementById('ep-'+p.key).checked; });
+    const payload = {username:user.username, cargo:document.getElementById('edit-cargo').value, role:document.getElementById('edit-role').value, permissions:perms};
+    const pw = document.getElementById('edit-pw').value;
+    if(pw) payload.password = pw;
+    const r = await api('/api/admin/users/update','POST',payload);
+    if(r && r.success){ showAlert('Usuário atualizado','success'); closeModal(); loadAdminUsers(); }
   });
 }
 
-async function toggleBlock(username,block){
-  const r=await api('/api/admin/users/update','POST',{username,blocked:block});
-  if(r&&r.success){ showAlert(block?`🔒 ${username} bloqueado`:`🔓 ${username} desbloqueado`,'success'); loadAdminUsers(); }
+async function toggleBlock(username, block){
+  const r = await api('/api/admin/users/update','POST',{username, blocked:block});
+  if(r && r.success){ showAlert(block?`🔒 ${username} bloqueado`:`🔓 ${username} desbloqueado`,'success'); loadAdminUsers(); }
 }
 
 function openBanModal(username){
-  const durations=[
+  const durations = [
     {label:'5 min',val:'5m'},{label:'30 min',val:'30m'},{label:'1 hora',val:'1h'},
     {label:'6 horas',val:'6h'},{label:'1 dia',val:'1d'},{label:'3 dias',val:'3d'},
     {label:'1 semana',val:'1w'},{label:'2 semanas',val:'2w'},{label:'1 mês',val:'30d'},
     {label:'Permanente',val:'perm'},
   ];
-  openModal('🔨 Banir: '+username,`
+  openModal('🔨 Banir: '+username, `
     <p style="color:var(--dim2);margin-bottom:12px;font-size:.83rem">Selecione a duração:</p>
     <div class="ban-options" id="ban-opts">
       ${durations.map(d=>`<div class="ban-option" onclick="selectBanDur(this,'${d.val}')">${d.label}</div>`).join('')}
     </div>
     <input type="hidden" id="ban-dur" value="">
-  `,async()=>{
-    const dur=document.getElementById('ban-dur').value;
+  `, async () => {
+    const dur = document.getElementById('ban-dur').value;
     if(!dur){ showAlert('Selecione a duração','warning'); return; }
-    // Permanente = 99 anos
-    const finalDur=dur==='perm'?'525600m':dur;
-    const r=await api('/api/admin/users/ban','POST',{username,duration:finalDur});
-    if(r&&r.success){ showAlert(`🔨 ${username} banido por ${r.duration}`,'warning'); closeModal(); loadAdminUsers(); }
+    const finalDur = dur==='perm'?'525600m':dur;
+    const r = await api('/api/admin/users/ban','POST',{username, duration:finalDur});
+    if(r && r.success){ showAlert(`🔨 ${username} banido por ${r.duration}`,'warning'); closeModal(); loadAdminUsers(); }
   });
 }
 
-function selectBanDur(el,val){
-  document.querySelectorAll('.ban-option').forEach(b=>b.classList.remove('selected'));
+function selectBanDur(el, val){
+  document.querySelectorAll('.ban-option').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('ban-dur').value=val;
+  document.getElementById('ban-dur').value = val;
 }
 
 async function unbanUser(username){
   if(!confirm(`Remover banimento de ${username}?`)) return;
-  const r=await api('/api/admin/users/unban','POST',{username});
-  if(r&&r.success){ showAlert(`✅ ${username} desbanido`,'success'); loadAdminUsers(); }
+  const r = await api('/api/admin/users/unban','POST',{username});
+  if(r && r.success){ showAlert(`✅ ${username} desbanido`,'success'); loadAdminUsers(); }
 }
 
 async function logoutUser(username){
   if(!confirm(`Deslogar ${username}?`)) return;
-  const r=await api('/api/admin/logout_user','POST',{username});
-  if(r&&r.success){ showAlert(`🔌 ${username} deslogado (${r.sessions_removed} sessão(ões))`,'success'); loadSessions(); }
+  const r = await api('/api/admin/logout_user','POST',{username});
+  if(r && r.success){ showAlert(`🔌 ${username} deslogado (${r.sessions_removed} sessão(ões))`,'success'); loadSessions(); }
 }
 
 async function deleteUser(username){
   if(!confirm(`Deletar permanentemente "${username}"? Não há desfazer.`)) return;
-  const r=await api('/api/admin/users/delete','POST',{username});
-  if(r&&r.success){ showAlert(`🗑 ${username} deletado`,'warning'); loadAdminUsers(); }
+  const r = await api('/api/admin/users/delete','POST',{username});
+  if(r && r.success){ showAlert(`🗑 ${username} deletado`,'warning'); loadAdminUsers(); }
 }
 
-// ADD USER
 function buildNewPermsGrid(){
-  const grid=document.getElementById('new-perms-grid');
+  const grid = document.getElementById('new-perms-grid');
   if(!grid) return;
-  grid.innerHTML=ALL_PERMISSIONS.map(p=>`
+  grid.innerHTML = ALL_PERMISSIONS.map(p=>`
     <div class="perm-item">
       <input type="checkbox" id="np-${p.key}">
       <label for="np-${p.key}">${p.label}</label>
@@ -1975,28 +2210,28 @@ function buildNewPermsGrid(){
 }
 
 async function createUser(){
-  const username=document.getElementById('new-username').value.trim().toLowerCase();
-  const password=document.getElementById('new-password').value;
-  const cargo=document.getElementById('new-cargo').value.trim()||'Usuário';
-  const role=document.getElementById('new-role').value;
-  if(!username||!password){ showAlert('Preencha usuário e senha','warning'); return; }
-  const permissions={};
-  ALL_PERMISSIONS.forEach(p=>{ permissions[p.key]=document.getElementById('np-'+p.key).checked; });
-  const r=await api('/api/admin/users/create','POST',{username,password,cargo,role,permissions});
-  if(r&&r.success){
+  const username = document.getElementById('new-username').value.trim().toLowerCase();
+  const password = document.getElementById('new-password').value;
+  const cargo    = document.getElementById('new-cargo').value.trim() || 'Usuário';
+  const role     = document.getElementById('new-role').value;
+  if(!username || !password){ showAlert('Preencha usuário e senha','warning'); return; }
+  const permissions = {};
+  ALL_PERMISSIONS.forEach(p => { permissions[p.key] = document.getElementById('np-'+p.key).checked; });
+  const r = await api('/api/admin/users/create','POST',{username,password,cargo,role,permissions});
+  if(r && r.success){
     showAlert(`✅ Usuário "${username}" criado!`,'success');
-    document.getElementById('new-username').value='';
-    document.getElementById('new-password').value='';
-    document.getElementById('new-cargo').value='';
-    ALL_PERMISSIONS.forEach(p=>{ document.getElementById('np-'+p.key).checked=false; });
+    document.getElementById('new-username').value = '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('new-cargo').value    = '';
+    ALL_PERMISSIONS.forEach(p => { document.getElementById('np-'+p.key).checked = false; });
     loadAdminUsers();
-    switchAdminTab('users',document.querySelector('.admin-tab'));
+    switchAdminTab('users', document.querySelector('.admin-tab'));
   }
 }
 
-function switchAdminTab(tab,btn){
-  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+function switchAdminTab(tab, btn){
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
   document.getElementById('admin-'+tab).classList.add('active');
   if(btn) btn.classList.add('active');
   if(tab==='sessions') loadSessions();
@@ -2005,39 +2240,39 @@ function switchAdminTab(tab,btn){
 // ============================================================
 // MODAL
 // ============================================================
-let _modalConfirm=null;
-function openModal(title,content,onConfirm){
-  document.getElementById('modal-title').textContent=title;
-  document.getElementById('modal-content').innerHTML=content;
-  _modalConfirm=onConfirm;
-  document.getElementById('modal-actions').innerHTML=`
+let _modalConfirm = null;
+function openModal(title, content, onConfirm){
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-content').innerHTML = content;
+  _modalConfirm = onConfirm;
+  document.getElementById('modal-actions').innerHTML = `
     <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
     ${onConfirm?'<button class="btn-primary" onclick="_modalConfirm&&_modalConfirm()">Confirmar</button>':''}`;
   document.getElementById('modal-overlay').classList.add('open');
 }
 function closeModal(){
   document.getElementById('modal-overlay').classList.remove('open');
-  _modalConfirm=null;
+  _modalConfirm = null;
 }
-document.getElementById('modal-overlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('modal-overlay')) closeModal();
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if(e.target === document.getElementById('modal-overlay')) closeModal();
 });
 
 // ============================================================
 // TOASTS
 // ============================================================
-function showAlert(message,type='info'){
-  const container=document.getElementById('alerts-container');
-  const toast=document.createElement('div');
-  toast.className=`alert-toast ${type}`;
-  const icons={info:'ℹ️',success:'✅',warning:'⚠️',error:'❌'};
-  toast.innerHTML=`<span>${icons[type]||'ℹ️'}</span>
+function showAlert(message, type='info'){
+  const container = document.getElementById('alerts-container');
+  const toast = document.createElement('div');
+  toast.className = `alert-toast ${type}`;
+  const icons = {info:'ℹ️',success:'✅',warning:'⚠️',error:'❌'};
+  toast.innerHTML = `<span>${icons[type]||'ℹ️'}</span>
     <span class="toast-msg">${escHtml(message)}</span>
     <button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
   container.appendChild(toast);
-  setTimeout(()=>{
+  setTimeout(() => {
     if(toast.parentElement){ toast.style.animation='toastOut .3s forwards'; setTimeout(()=>toast.remove(),300); }
-  },4500);
+  }, 4500);
 }
 
 // ============================================================
@@ -2047,20 +2282,23 @@ function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
 function escAttr(s){ return escHtml(s); }
 function nowTime(){ return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
 
-document.getElementById('chat-input').addEventListener('input',function(){
-  this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,110)+'px';
+document.getElementById('chat-input').addEventListener('input', function(){
+  this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight,110)+'px';
 });
 
 // ============================================================
 // AUTO-LOGIN
 // ============================================================
-window.addEventListener('load',async()=>{
+window.addEventListener('load', async () => {
   if(STATE.token){
-    const r=await fetch(BASE+'/api/me',{headers:{'X-Auth-Token':STATE.token}})
-      .then(r=>r.json()).catch(()=>null);
-    if(r&&r.username){
-      STATE.username=r.username; STATE.role=r.role; STATE.cargo=r.cargo;
-      STATE.permissions=r.permissions||{}; STATE.supreme=r.supreme||false;
+    const r = await fetch(BASE+'/api/me', {headers:{'X-Auth-Token':STATE.token}})
+      .then(r => r.json()).catch(() => null);
+    if(r && r.username){
+      STATE.username    = r.username;
+      STATE.role        = r.role;
+      STATE.cargo       = r.cargo;
+      STATE.permissions = r.permissions || {};
+      STATE.supreme     = r.supreme || false;
       startApp(); return;
     }
   }
@@ -2068,4 +2306,4 @@ window.addEventListener('load',async()=>{
 });
 </script>
 </body>
-  </html>
+</html>
