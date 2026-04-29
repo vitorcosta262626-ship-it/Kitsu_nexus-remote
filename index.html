@@ -1355,7 +1355,9 @@ const STATE = {
   banCountdownInterval: null,
 };
 
-const BASE = window.location.origin;
+const BASE = window.location.hostname === 'vitorcosta262626-ship-it.github.io'
+  ? 'https://herbal-skinhead-atrium.ngrok-free.app'
+  : window.location.origin;
 const MAX_ATTEMPTS = 5;
 
 const ALL_PERMISSIONS = [
