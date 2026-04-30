@@ -1588,9 +1588,14 @@ async function doLogin() {
   const tunnelOk = await _checkServeoReady();
   if(!tunnelOk) {
     btn.disabled = false; btn.innerHTML = 'ENTRAR';
-    showLoginError({ code:'NETWORK', error:'Clique aqui para liberar o acesso ao servidor, depois tente novamente.' });
-    // Abre a página do Serveo para o usuário aceitar o aviso
-    setTimeout(() => window.open(BASE, '_blank'), 300);
+    showLoginError({ code:'NETWORK', error:'O servidor precisa ser liberado. Clique no botão abaixo, aceite o aviso na nova aba, volte aqui e tente novamente.' });
+    // Mostra botão de liberação
+    const errBody = document.getElementById('login-error-msg');
+    const btnLiberar = document.createElement('button');
+    btnLiberar.textContent = '🔓 Liberar Acesso ao Servidor';
+    btnLiberar.style.cssText = 'margin-top:10px;padding:8px 16px;background:linear-gradient(135deg,#6B5CE7,#E0569A);border:none;border-radius:8px;color:#fff;font-family:Exo 2,sans-serif;font-size:.85rem;cursor:pointer;width:100%';
+    btnLiberar.onclick = () => window.open(BASE, '_blank');
+    errBody.appendChild(btnLiberar);
     return;
   }
 
