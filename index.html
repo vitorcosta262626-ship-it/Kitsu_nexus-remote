@@ -1561,6 +1561,14 @@ function clearLoginError() {
 // ============================================================
 // LOGIN / LOGOUT
 // ============================================================
+async function _checkServeoReady() {
+  // Testa se o túnel está acessível sem aviso de browser
+  try {
+    const r = await fetch(BASE+'/api/ping', {method:'GET', mode:'cors'});
+    return r.ok;
+  } catch(e) { return false; }
+}
+
 async function doLogin() {
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value;
@@ -1575,6 +1583,16 @@ async function doLogin() {
   const btn = document.getElementById('btn-login');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>';
+
+  // Verifica se o túnel está pronto
+  const tunnelOk = await _checkServeoReady();
+  if(!tunnelOk) {
+    btn.disabled = false; btn.innerHTML = 'ENTRAR';
+    showLoginError({ code:'NETWORK', error:'Clique aqui para liberar o acesso ao servidor, depois tente novamente.' });
+    // Abre a página do Serveo para o usuário aceitar o aviso
+    setTimeout(() => window.open(BASE, '_blank'), 300);
+    return;
+  }
 
   let data;
   try {
